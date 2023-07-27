@@ -1,0 +1,24 @@
+language: android
+jdk: openjdk17
+
+android:
+  components:
+    - tools
+    - platform-tools
+    - build-tools-34.0.0
+    - android-32
+    - android-24
+    - extra-android-m2repository
+    - extra-android-support
+    - extra-google-m2repository
+
+
+before_install:
+  - chmod +x gradlew
+
+#before_install:
+#  - yes | sdkmanager "platforms;android-32"
+
+#script:
+#  - ./gradlew clean build
+
