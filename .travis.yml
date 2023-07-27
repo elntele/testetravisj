@@ -117,7 +117,7 @@
 
 os: linux
 language: android
-jdk: openjdk11
+jdk: openjdk17
 
 android:
   components:
