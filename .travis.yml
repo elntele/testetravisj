@@ -1,34 +1,77 @@
-language: android
-jdk: openjdk17
+#language: android
+#jdk: openjdk17
+#
+#android:
+#  components:
+#    - tools
+#    - platform-tools
+#    - build-tools-34.0.0
+#    - android-32
+#    - android-24
+#    - extra-android-m2repository
+#    - extra-android-support
+#    - extra-google-m2repository
+#
+#
+#before_install:
+#  - chmod +x gradlew
+#  #- yes | ~/Android/Sdk/tools/bin/sdkmanager --licenses
+#  - yes | sdkmanager "platforms;android-33
+#
+##before_install:
+##  - yes | sdkmanager "platforms;android-32"
+#
+##script:
+##  - ./gradlew clean build
+#
+#
+#install:
+## download and install the latest version of Android SDK Command Line Tools
+## parece que isso resolvel o erro do xml bind
+#  - wget -q "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O android-sdk-tools.zip
+#  - unzip -q android-sdk-tools.zip -d $HOME/android-sdk
+#  - export ANDROID_SDK_ROOT=$HOME/android-sdk
+#  - export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/bin
+#  - echo "y" | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --update
 
+
+dist: trusty
+language: android
+jdk:
+  - oraclejdk17
 android:
   components:
+    # All the build system components should be at the latest version
     - tools
     - platform-tools
+    - tools
+    # Note that the tools section appears twice on purpose as it’s required
+    # to get the newest Android SDK tools. Source: Travis CI docs.
     - build-tools-34.0.0
-    - android-32
-    - android-24
-    - extra-android-m2repository
-    - extra-android-support
-    - extra-google-m2repository
+    - android-33
 
+    # The libraries we can't get from Maven Central or similar
+    - extra
+branches:
+  except:
+    - /^v\..*$/ # Exclude version tags
+#notifications:
+#  email: true
 
 before_install:
+  - yes | sdkmanager "platforms;android-34"
+
+before_script:
+
+  # Ensure Gradle wrapper is executable
   - chmod +x gradlew
-  #- yes | ~/Android/Sdk/tools/bin/sdkmanager --licenses
-  - yes | sdkmanager "platforms;android-33
-
-#before_install:
-#  - yes | sdkmanager "platforms;android-32"
-
-#script:
-#  - ./gradlew clean build
-
-
-install:
-  # Download and install the latest version of Android SDK Command Line Tools
-  - wget -q "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O android-sdk-tools.zip
-  - unzip -q android-sdk-tools.zip -d $HOME/android-sdk
-  - export ANDROID_SDK_ROOT=$HOME/android-sdk
-  - export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/bin
-  - echo "y" | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --update
+  # Ensure signing configuration is present
+  - mv app/gradle.properties.example app/gradle.properties
+  # Reduce memory usage / avoid OutOfMemoryError with Gradle 4.10.3
+  - echo "org.gradle.jvmargs=-Xmx2048m -Xms512m -XX:MaxPermSize=768m" >> gradle.properties
+script:
+  - ./gradlew clean test assembleDebug
+#addons:
+#  # Fix OpenJDK builds
+#  # https://github.com/travis-ci/travis-ci/issues/5227
+#  hostname: short-hostname
