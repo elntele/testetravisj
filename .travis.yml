@@ -15,6 +15,7 @@ android:
 
 before_install:
   - chmod +x gradlew
+  - yes | ~/Android/Sdk/tools/bin/sdkmanager --licenses
 
 #before_install:
 #  - yes | sdkmanager "platforms;android-32"
