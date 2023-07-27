@@ -24,3 +24,11 @@ before_install:
 #script:
 #  - ./gradlew clean build
 
+
+install:
+  # Download and install the latest version of Android SDK Command Line Tools
+  - wget -q "https://dl.google.com/android/repository/commandlinetools-linux-7302050_latest.zip" -O android-sdk-tools.zip
+  - unzip -q android-sdk-tools.zip -d $HOME/android-sdk
+  - export ANDROID_SDK_ROOT=$HOME/android-sdk
+  - export PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/bin
+  - echo "y" | sdkmanager --sdk_root=$ANDROID_SDK_ROOT --update
